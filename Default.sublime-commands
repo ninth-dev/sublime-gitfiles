@@ -1,0 +1,6 @@
+[
+  {
+    "caption": "GitFiles: Goto",
+    "command": "git_files_goto"
+  }
+]
