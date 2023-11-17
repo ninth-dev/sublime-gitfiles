@@ -2,5 +2,9 @@
   {
     "caption": "GitFiles: Goto",
     "command": "git_files_goto"
+  },
+  {
+    "caption": "GitFiles: Open",
+    "command": "git_files_open"
   }
 ]
