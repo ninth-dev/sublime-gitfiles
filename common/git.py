@@ -7,13 +7,16 @@ import sublime
 from .typings import GitFile
 
 KIND_ADDED = (sublime.KIND_ID_COLOR_GREENISH, "a", "Added")
+KIND_CONFLICTED = (sublime.KIND_ID_COLOR_REDISH, "c", "Conflicted")
 KIND_MODIFIED = (sublime.KIND_ID_COLOR_ORANGISH, "m", "Modified")
 KIND_UNTRACKED = (sublime.KIND_ID_COLOR_BLUISH, "?", "Untracked")
 
-# TODO: Handle all cases of the status
-# GitStatus: returns the status of the index and the status of the working tree
-#  See: https://git-scm.com/docs/git-status
-GIT_STATUS_KIND_MAPPING = {"A": KIND_ADDED, "M": KIND_MODIFIED, "?": KIND_UNTRACKED}
+GIT_STATUS_KIND_MAPPING = {
+    "A": KIND_ADDED,
+    "C": KIND_CONFLICTED,
+    "M": KIND_MODIFIED,
+    "?": KIND_UNTRACKED,
+}
 
 
 def git_status_porcelain(cwd):
@@ -53,6 +56,8 @@ def get_git_files(cwd):
         file_path = match.group(3)
         file_name = PurePath(file_path).name
 
+        # GitStatus: returns the status of the index and the status of the working tree
+        #  See: https://git-scm.com/docs/git-status
         if index_status == "?" and working_tree_status == "?":
             items.append(GitFile(file_name, file_path, "?"))
         elif working_tree_status == "M":
