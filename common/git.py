@@ -1,6 +1,7 @@
 import re
-from pathlib import PurePath
+from pathlib import Path, PurePath
 from subprocess import PIPE, Popen
+from typing import List
 
 import sublime
 
@@ -19,7 +20,7 @@ GIT_STATUS_KIND_MAPPING = {
 }
 
 
-def git_status_porcelain(cwd):
+def git_status_porcelain(cwd: str) -> str:
     cmd = "git status --porcelain=v1"
     p = Popen(
         cmd,
@@ -44,9 +45,9 @@ def git_status_porcelain(cwd):
     return output.decode("utf-8")
 
 
-def get_git_files(cwd):
+def get_git_files(cwd: Path) -> List[GitFile]:
     items = []
-    for result in git_status_porcelain(cwd).strip().split("\n"):
+    for result in git_status_porcelain(str(cwd)).strip().split("\n"):
         match = re.search(r"^(.?)(.?)\s(.+)", result)
         if match is None:
             return items
@@ -60,7 +61,7 @@ def get_git_files(cwd):
         #  See: https://git-scm.com/docs/git-status
         if index_status == "?" and working_tree_status == "?":
             items.append(GitFile(file_name, file_path, "?"))
-        elif working_tree_status == "M":
+        elif working_tree_status == "M" or index_status == "M":
             items.append(GitFile(file_name, file_path, "M"))
         elif working_tree_status == "D":
             pass

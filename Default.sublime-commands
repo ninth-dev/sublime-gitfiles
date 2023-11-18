@@ -4,7 +4,15 @@
     "command": "git_files_goto"
   },
   {
-    "caption": "GitFiles: Open",
-    "command": "git_files_open"
-  }
+    "caption": "GitFiles: Open Files",
+    "command": "git_files_open_files"
+  },
+  {
+    "caption": "GitFiles: Next Modification",
+    "command": "git_files_next_modification"
+  },
+  {
+    "caption": "GitFiles: Prev Modification",
+    "command": "git_files_prev_modification"
+  },
 ]

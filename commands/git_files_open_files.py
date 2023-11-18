@@ -6,7 +6,7 @@ import sublime_plugin
 from ..common.git import get_git_files
 
 
-class GitFilesOpenCommand(sublime_plugin.WindowCommand):
+class GitFilesOpenFilesCommand(sublime_plugin.WindowCommand):
     def run(self):
         cwd = Path(self.window.extract_variables()["folder"])
         git_files = get_git_files(cwd)
