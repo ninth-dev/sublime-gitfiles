@@ -2,17 +2,34 @@
 
 A sublime plugin to easily open the changed files based on `git status` and navigate the modifications made across the codebase.
 
-For example:
-
 ![git status example](images/git-status-example.png)
 
-Using **GitFiles: Goto** command, you can goto the modified and untracked files.
+## Installation
+
+- Open the command palette with `CMD + SHIFT + P`
+- Select `Package Control: Add Repository`
+- Paste in : https://github.com/ninth-dev/sublime-gitfiles
+- Open the command palette again with `CMD + SHIFT + P`
+- Select `Package Control: Install Package`
+- Choose `sublime-gitfiles`
+
+
+## Usage
+
+### Goto
+
+Using **GitFiles: Goto** command, you can go to the modified and untracked files.
 
 ![GitFiles: Goto](images/git-files-goto-command.png)
+
+### Open Files
 
 Using **GitFiles: Open Files** command, you can open all the modified and untracked files.
 
 ![GitFiles: Open Files results](images/git-files-opened-files.png)
+
+
+### Move through modifications
 
 To navigate through the modifications, set up the key bindings.
 
@@ -25,5 +42,6 @@ For example,
 ]
 ```
 
-The difference between sublime's native `next_modification` / `prev_modification` and this plugin's is that it can navigate to the next/prev changed file.
+The difference between Sublime Text's native `next_modification` / `prev_modification` and this plugin's is that it can
+navigate to the next/prev modifications across changed files.
 
