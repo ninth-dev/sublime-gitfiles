@@ -2,8 +2,9 @@ from pathlib import Path
 
 import sublime_plugin
 
-from ..core.git import get_git_files, git_status_porcelain
+from ..core.git import git_status_porcelain
 from ..core.modification import get_prev_git_file, get_relative_path
+from ..core.parser import parse_git_status
 
 
 class GitFilesPrevModificationCommand(sublime_plugin.WindowCommand):
@@ -20,8 +21,8 @@ class GitFilesPrevModificationCommand(sublime_plugin.WindowCommand):
                 if current_position >= position:
                     window.run_command("next_modification")
 
-                    git_status_output = git_status_porcelain(cwd)
-                    git_files = get_git_files(git_status_output)
+                    output = git_status_porcelain(cwd)
+                    git_files = parse_git_status(output)
 
                     if not view.file_name():
                         current_file = None
