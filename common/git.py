@@ -20,12 +20,12 @@ GIT_STATUS_KIND_MAPPING = {
 }
 
 
-def git_status_porcelain(cwd: str) -> str:
+def git_status_porcelain(cwd: Path) -> str:
     cmd = "git status --porcelain=v1"
     p = Popen(
         cmd,
         bufsize=-1,
-        cwd=cwd,
+        cwd=str(cwd),
         stdin=PIPE,
         stdout=PIPE,
         stderr=PIPE,
@@ -45,9 +45,9 @@ def git_status_porcelain(cwd: str) -> str:
     return output.decode("utf-8")
 
 
-def get_git_files(cwd: Path) -> List[GitFile]:
+def get_git_files(status_output: str) -> List[GitFile]:
     items = []
-    for result in git_status_porcelain(str(cwd)).strip().split("\n"):
+    for result in status_output.strip().split("\n"):
         match = re.search(r"^(.?)(.?)\s(.+)", result)
         if match is None:
             return items
