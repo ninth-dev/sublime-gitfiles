@@ -1,9 +1,6 @@
 from pathlib import Path
 from typing import List, Optional
 
-from sublime import Settings
-
-from typing import Optional
 from .typings import GitFile
 
 

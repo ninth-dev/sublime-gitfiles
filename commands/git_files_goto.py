@@ -1,10 +1,30 @@
 from functools import partial
 from pathlib import Path
 
+import re
 import sublime
 import sublime_plugin
 
-from ..common.git import GIT_STATUS_KIND_MAPPING, get_git_files, git_status_porcelain
+from ..core.git import get_git_files, git_status_porcelain
+from ..core.typings import (
+    KIND_ADDED,
+    KIND_CONFLICTED,
+    KIND_DELETED,
+    KIND_MODIFIED,
+    KIND_RENAMED,
+    KIND_TYPE_CHANGED,
+    KIND_UNTRACKED,
+)
+
+GIT_STATUS_KIND_MAPPING = {
+    "a": KIND_ADDED,
+    "c": KIND_CONFLICTED,
+    "d": KIND_DELETED,
+    "m": KIND_MODIFIED,
+    "r": KIND_RENAMED,
+    "t": KIND_TYPE_CHANGED,
+    "?": KIND_UNTRACKED,
+}
 
 
 class GitFilesGotoCommand(sublime_plugin.WindowCommand):
@@ -12,6 +32,7 @@ class GitFilesGotoCommand(sublime_plugin.WindowCommand):
         cwd = Path(self.window.extract_variables()["folder"])
         git_status_output = git_status_porcelain(cwd)
         git_files = get_git_files(git_status_output)
+        # print(git_files)
 
         if len(git_files) > 0:
             self.window.show_quick_panel(
@@ -23,27 +44,35 @@ class GitFilesGotoCommand(sublime_plugin.WindowCommand):
             sublime.message_dialog("GitFiles: No changed files.")
 
     def to_quick_panel_item(self, git_files):
-        return [
-            sublime.QuickPanelItem(
-                item.file_name,
-                item.file_path,
-                item.git_status,
-                GIT_STATUS_KIND_MAPPING.get(
-                    item.git_status,
-                    (sublime.KIND_ID_AMBIGUOUS, item.git_status.lower(), ""),
-                ),
+        items = []
+        for item in git_files:
+            git_status_details = item.git_status.details()
+            (annotation, git_status_description) = git_status_details
+            items.append(
+                sublime.QuickPanelItem(
+                    item.file_name,
+                    item.file_path,
+                    git_status_description,
+                    GIT_STATUS_KIND_MAPPING.get(
+                        annotation,
+                        (sublime.KIND_ID_AMBIGUOUS, annotation, ""),
+                    ),
+                )
             )
-            for item in git_files
-        ]
+        return items
+
+
+    def __open_file(self, cwd, items, index: int, on_highlight: bool):
+        if index > -1:
+            rename_match = re.search(r"(.+) -> (.*)", items[index].file_path)
+            file_path = rename_match.group(2) if rename_match is not None else items[index].file_path
+            full_path = Path(cwd, file_path)
+            new_file_flag = sublime.NewFileFlags.TRANSIENT if on_highlight else sublime.NewFileFlags.NONE
+            if full_path.is_file():
+                self.window.open_file(str(full_path),new_file_flag)
 
     def on_select(self, cwd, items, index: int):
-        if index > -1:
-            full_path = Path(cwd, items[index].file_path)
-            if full_path.is_file():
-                self.window.open_file(str(full_path))
+        self.__open_file(cwd, items, index, False)
 
     def on_highlight(self, cwd, items, index: int):
-        if index > -1:
-            full_path = Path(cwd, items[index].file_path)
-            if full_path.is_file():
-                self.window.open_file(str(full_path), sublime.NewFileFlags.TRANSIENT)
+        self.__open_file(cwd, items, index, True)

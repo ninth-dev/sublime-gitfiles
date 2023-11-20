@@ -2,8 +2,8 @@ from pathlib import Path
 
 import sublime_plugin
 
-from ..common.git import get_git_files, git_status_porcelain
-from ..common.modification import get_next_git_file, get_relative_path
+from ..core.git import get_git_files, git_status_porcelain
+from ..core.modification import get_next_git_file, get_relative_path
 
 
 class GitFilesNextModificationCommand(sublime_plugin.WindowCommand):

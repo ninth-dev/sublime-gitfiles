@@ -3,7 +3,7 @@ from pathlib import Path
 import sublime
 import sublime_plugin
 
-from ..common.git import get_git_files, git_status_porcelain
+from ..core.git import get_git_files, git_status_porcelain
 
 
 class GitFilesOpenFilesCommand(sublime_plugin.WindowCommand):
