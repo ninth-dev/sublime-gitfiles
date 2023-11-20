@@ -14,6 +14,9 @@ def get_relative_path(folder_path: Path, full_path: str) -> str:
 def get_next_git_file(
     cwd: Path, git_files: List[GitFile], current_file: Optional[str]
 ) -> Optional[Path]:
+    if len(git_files) == 0:
+        return None
+
     file_list = [file.file_path for file in git_files]
     current_file_index = (
         safe_index(file_list, current_file) if current_file is not None else None
@@ -33,6 +36,9 @@ def get_next_git_file(
 def get_prev_git_file(
     cwd: Path, git_files: List[GitFile], current_file: Optional[str]
 ) -> Optional[Path]:
+    if len(git_files) == 0:
+        return None
+
     file_list = [file.file_path for file in git_files]
     current_file_index = (
         safe_index(file_list, current_file) if current_file is not None else None
