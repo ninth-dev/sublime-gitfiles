@@ -2,7 +2,8 @@ import re
 from pathlib import PurePath
 from typing import List
 
-from .typings import GitFile, GitFileStatus
+from .git_status import GitStatus
+from .typings import GitFile
 
 
 def parse_git_status(status_output: str) -> List[GitFile]:
@@ -21,7 +22,7 @@ def parse_git_status(status_output: str) -> List[GitFile]:
             GitFile(
                 file_name,
                 file_path,
-                GitFileStatus(index_status, working_tree_status),
+                GitStatus(index_status, working_tree_status),
             )
         )
 
