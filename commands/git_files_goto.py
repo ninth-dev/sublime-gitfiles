@@ -1,31 +1,15 @@
 import re
 from functools import partial
 from pathlib import Path
+from typing import List
 
 import sublime
 import sublime_plugin
 
 from ..core.git import git_status_porcelain
 from ..core.parser import parse_git_status
-from ..core.typings import (
-    KIND_ADDED,
-    KIND_CONFLICTED,
-    KIND_DELETED,
-    KIND_MODIFIED,
-    KIND_RENAMED,
-    KIND_TYPE_CHANGED,
-    KIND_UNTRACKED,
-)
-
-GIT_STATUS_KIND_MAPPING = {
-    "a": KIND_ADDED,
-    "c": KIND_CONFLICTED,
-    "d": KIND_DELETED,
-    "m": KIND_MODIFIED,
-    "r": KIND_RENAMED,
-    "t": KIND_TYPE_CHANGED,
-    "?": KIND_UNTRACKED,
-}
+from ..core.status_code import StatusCode
+from ..core.typings import GitFile
 
 
 class GitFilesGotoCommand(sublime_plugin.WindowCommand):
@@ -44,21 +28,19 @@ class GitFilesGotoCommand(sublime_plugin.WindowCommand):
         else:
             sublime.message_dialog("GitFiles: No changed files.")
 
-    def to_quick_panel_item(self, git_files):
+    def to_quick_panel_item(self, git_files: List[GitFile]):
         items = []
         for item in git_files:
             # print(item.file_name)
             git_status_details = item.git_status.details()
-            (annotation, git_status_description) = git_status_details
+            (status_code, git_status_description) = git_status_details
+            kind = StatusCode(status_code).kind()
             items.append(
                 sublime.QuickPanelItem(
                     item.file_name,
                     item.file_path,
                     git_status_description,
-                    GIT_STATUS_KIND_MAPPING.get(
-                        annotation,
-                        (sublime.KIND_ID_AMBIGUOUS, annotation, ""),
-                    ),
+                    kind,
                 )
             )
         return items

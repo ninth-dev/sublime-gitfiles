@@ -1,35 +1,15 @@
 from typing import NamedTuple, Tuple
-
-import sublime
-
-KIND_ADDED = (sublime.KIND_ID_COLOR_GREENISH, "a", "Added")
-KIND_CONFLICTED = (sublime.KIND_ID_COLOR_REDISH, "u", "Unmerged")
-KIND_DELETED = (sublime.KIND_ID_COLOR_REDISH, "d", "Deleted")
-KIND_MODIFIED = (sublime.KIND_ID_COLOR_ORANGISH, "m", "Modified")
-KIND_RENAMED = (sublime.KIND_ID_COLOR_CYANISH, "r", "Renamed")
-KIND_TYPE_CHANGED = (sublime.KIND_ID_COLOR_CYANISH, "t", "File Type Changed")
-KIND_UNTRACKED = (sublime.KIND_ID_COLOR_BLUISH, "?", "Untracked")
-
+from .status_code import StatusCode
 
 class GitFileStatus(NamedTuple):
     index_status: str
     working_tree_status: str
 
-    def __status_description(self, code: str) -> Tuple[str, str]:
-        if code == "M":
-            return ("m", "Modified")
-        elif code == "D":
-            return ("d", "Deleted")
-        elif code == "A":
-            return ("a", "Added")
-        elif code == "R":
-            return ("r", "Renamed")
-        elif code == "c":
-            return ("c", "Copied")
-        elif code == "T":
-            return ("t", "File Type Changed")
-        else:
-            return ("#", "Unknown Status")
+    def __status_description(self, code: str) -> StatusCode
+        try:
+            return StatusCode(code)
+        except:
+            return StatusCode.UNKNOWN
 
     def details(self) -> Tuple[str, str]:
         index_status = self.index_status
