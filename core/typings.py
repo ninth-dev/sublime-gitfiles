@@ -1,56 +1,65 @@
-from typing import NamedTuple, Tuple
-from .status_code import StatusCode
+from typing import NamedTuple, Optional, Tuple
+
+import sublime
+
+from .status_code import StatusCode, UnmergedStatusCode, ValidStatusCode
+
 
 class GitFileStatus(NamedTuple):
     index_status: str
     working_tree_status: str
 
-    def __status_description(self, code: str) -> StatusCode
+    def __safe_status_code(
+        self, code: str, default: ValidStatusCode
+    ) -> ValidStatusCode:
         try:
             return StatusCode(code)
         except:
-            return StatusCode.UNKNOWN
+            return default
 
-    def details(self) -> Tuple[str, str]:
+    def __safe_unmerged_status_code(self, code: str) -> Optional[ValidStatusCode]:
+        try:
+            return UnmergedStatusCode(code)
+        except:
+            return None
+
+    def kind(self) -> Tuple[sublime.KindId, str, str]:
+        status_code = self.code()
+        return (
+            status_code.kind_id(),
+            status_code.kind_letter(),
+            f"{status_code.description()} [{self.index_status}{self.working_tree_status}]",
+        )
+
+    def code(self) -> ValidStatusCode:
         index_status = self.index_status
         working_tree_status = self.working_tree_status
+        both_status = f"{index_status}{working_tree_status}"
 
-        if index_status == "?" and working_tree_status == "?":
-            return ("?", "Untracked")
+        # unmerged
+        status_code = self.__safe_unmerged_status_code(both_status)
 
-        if index_status == "!" and working_tree_status == "!":
-            return ("!", "Ignored")
+        if status_code is not None:
+            return status_code
 
         if index_status == " " and not working_tree_status == " ":
             # not staged
-            return self.__status_description(working_tree_status)
+            return self.__safe_status_code(working_tree_status, StatusCode.UNKNOWN)
 
         if working_tree_status == " " and not index_status == " ":
             # staged
-            (code, description) = self.__status_description(index_status)
-            return (code, f"{description}*")
+            return self.__safe_status_code(working_tree_status, StatusCode.UNKNOWN)
 
-        # ---- unmerged
-        if working_tree_status == index_status and working_tree_status == "D":
-            return ("u", "Unmerged, both deleted")
-        if working_tree_status == index_status and working_tree_status == "U":
-            return ("u", "Unmerged, both modified")
-        if working_tree_status == index_status and working_tree_status == "A":
-            return ("u", "Unmerged, both added")
-        if working_tree_status == "U" and index_status == "D":
-            return ("u", "Unmerged, deleted by them")
-        if working_tree_status == "U" and index_status == "A":
-            return ("u", "Unmerged, added by them")
-        if index_status == "U" and working_tree_status == "D":
-            return ("u", "Unmerged, deleted by us")
-        if index_status == "U" and working_tree_status == "D":
-            return ("u", "Unmerged, added by us")
-        # ---- unmerged ends
+        # if (index_status == "?" and working_tree_status == "?") or (
+        #     index_status == "!" and working_tree_status == "!"
+        # ):
+        status_code = self.__safe_status_code(both_status, StatusCode.UNKNOWN)
 
-        # working_tree_status takes precedence for description
-        # append [XY]
-        (code, description) = self.__status_description(working_tree_status)
-        return (code, f"{description} [{index_status}{working_tree_status}]")
+        # otherwise use working_tree_status
+        if status_code is StatusCode.UNKNOWN:
+            return self.__safe_status_code(working_tree_status, status_code)
+        else:
+            return status_code
 
 
 class GitFile(NamedTuple):

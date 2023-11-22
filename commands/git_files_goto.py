@@ -8,7 +8,6 @@ import sublime_plugin
 
 from ..core.git import git_status_porcelain
 from ..core.parser import parse_git_status
-from ..core.status_code import StatusCode
 from ..core.typings import GitFile
 
 
@@ -32,15 +31,18 @@ class GitFilesGotoCommand(sublime_plugin.WindowCommand):
         items = []
         for item in git_files:
             # print(item.file_name)
-            git_status_details = item.git_status.details()
-            (status_code, git_status_description) = git_status_details
-            kind = StatusCode(status_code).kind()
+            git_status = item.git_status
+            git_status_code = git_status.code()
+            annotation = (
+                git_status_code.description()
+                + f"[{git_status.index_status}{git_status.working_tree_status}]"
+            )
             items.append(
                 sublime.QuickPanelItem(
                     item.file_name,
                     item.file_path,
-                    git_status_description,
-                    kind,
+                    annotation,
+                    git_status.kind(),
                 )
             )
         return items
