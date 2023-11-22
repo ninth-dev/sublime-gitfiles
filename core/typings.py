@@ -63,7 +63,7 @@ class GitFileStatus(NamedTuple):
             return ("u", "Unmerged, added by them")
         if index_status == "U" and working_tree_status == "D":
             return ("u", "Unmerged, deleted by us")
-        if index_status == "U" and working_tree_status == "D":
+        if index_status == "U" and working_tree_status == "A":
             return ("u", "Unmerged, added by us")
         # ---- unmerged ends
 
