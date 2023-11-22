@@ -1,6 +1,4 @@
-from typing import NamedTuple, Tuple
-
-import sublime
+from typing import NamedTuple
 
 from .git_status import GitStatus
 

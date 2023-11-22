@@ -40,6 +40,7 @@ class GitFilesGotoCommand(sublime_plugin.WindowCommand):
                     git_status.kind(),
                 )
             )
+
         return items
 
     def __open_file(self, cwd, items, index: int, on_highlight: bool):
