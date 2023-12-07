@@ -34,4 +34,7 @@ class GitStatus:
         )
 
     def description(self) -> str:
-        return f"{self.status_code.description()} [{self.index_status}{self.working_tree_status}]"
+        return (
+            f"{self.status_code.description()}"
+            f" [{self.index_status}{self.working_tree_status}]"
+        )
