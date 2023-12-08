@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Optional
 
-from .typings import GitFile
+from .git_file import GitFile
 
 
 def get_relative_path(folder_path: Path, full_path: str) -> str:

@@ -3,7 +3,7 @@ from pathlib import PurePath
 from typing import List
 
 from .git_status import GitStatus
-from .typings import GitFile
+from .git_file import GitFile
 
 
 def parse_git_status(status_output: str) -> List[GitFile]:

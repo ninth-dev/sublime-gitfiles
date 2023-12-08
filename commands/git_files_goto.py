@@ -8,7 +8,7 @@ import sublime_plugin
 
 from ..core.git import git_status_porcelain
 from ..core.parser import parse_git_status
-from ..core.typings import GitFile
+from ..core.git_file import GitFile
 
 
 class GitFilesGotoCommand(sublime_plugin.WindowCommand):
