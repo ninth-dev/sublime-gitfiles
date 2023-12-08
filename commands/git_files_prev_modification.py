@@ -3,7 +3,7 @@ from pathlib import Path
 import sublime_plugin
 
 from ..core.git import git_status_porcelain
-from ..core.modification import get_prev_git_file, get_relative_path
+from ..core.modification import get_current_file, get_prev_git_file, get_relative_path
 from ..core.parser import parse_git_status
 
 
@@ -23,12 +23,7 @@ class GitFilesPrevModificationCommand(sublime_plugin.WindowCommand):
 
                     output = git_status_porcelain(cwd)
                     git_files = parse_git_status(output)
-
-                    if not view.file_name():
-                        current_file = None
-                    else:
-                        file_path = window.extract_variables()["file"]
-                        current_file = get_relative_path(cwd, file_path)
+                    current_file = get_current_file(window, cwd)
 
                     prev_git_file = get_prev_git_file(cwd, git_files, current_file)
 

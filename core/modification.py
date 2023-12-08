@@ -1,3 +1,4 @@
+import sublime
 from pathlib import Path
 from typing import List, Optional
 
@@ -6,6 +7,15 @@ from .git_file import GitFile
 
 def get_relative_path(folder_path: Path, full_path: str) -> str:
     return full_path.replace(f"{folder_path}/", "")
+
+
+def get_current_file(window: sublime.Window, folder_path: Path) -> Optional[str]:
+    active_view = window.active_view()
+    if active_view is None or active_view.file_name() is None:
+        return None
+    else:
+        file_path = window.extract_variables()["file"]
+        return get_relative_path(folder_path, file_path)
 
 
 def get_next_git_file(
